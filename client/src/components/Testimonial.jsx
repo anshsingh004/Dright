@@ -7,22 +7,52 @@ const Testimonial = () => {
 
   const testimonials = [
     {
+      name: "Priya Sharma",
+      location: "Mumbai, India",
+      image: assets.testimonial_image_3,
+      rating: 5,
+      role: "Verified Renter",
+      testimonial: "Booking with a professional chauffeur through Dright was effortless. The driver arrived 10 minutes early, navigated peak traffic with ease, and the luxury SUV was in pristine showroom condition."
+    },
+    {
+      name: "Johnathan Smith",
+      location: "New York, USA",
+      image: assets.testimonial_image_2,
+      rating: 5,
+      role: "Business Traveler",
+      testimonial: "Selected the home delivery option for a weekend trip from Manhattan. The car was brought right to my doorstep spotless with a full tank. No queues, no counter delays—pure convenience."
+    },
+    {
+      name: "Rohan Mehta",
+      location: "Bengaluru, India",
+      image: assets.testimonial_image_6,
+      rating: 5,
+      role: "Verified Renter",
+      testimonial: "The car was impeccably clean, sanitized, and drove smoothly. Transparent pricing with zero surprise charges makes Dright my go-to platform for every regional and business trip."
+    },
+    {
       name: "Emma Rodriguez",
       location: "Barcelona, Spain",
       image: assets.testimonial_image_1,
-      testimonial: "I've rented cars from various companies, but the experience with Dright was exceptional."
+      rating: 5,
+      role: "Vacation Renter",
+      testimonial: "The owner communication was warm and prompt. Key handover took under two minutes, and the vehicle drove beautifully along the coast. Exceptional customer care from start to finish."
     },
     {
-      name: "John Smith",
-      location: "New York, USA",
-      image: assets.testimonial_image_2,
-      testimonial: "Dright made my trip so much easier. The car was delivered right to my door, and the customer service was fantastic!"
+      name: "David Vance",
+      location: "Chicago, USA",
+      image: assets.testimonial_image_4,
+      rating: 5,
+      role: "Verified Renter",
+      testimonial: "The real-time availability calendar worked flawlessly during a high-demand holiday weekend when traditional agencies were completely sold out. Great value and hassle-free return."
     },
     {
-      name: "Ava Johnson",
-      location: "Sydney, Australia",
-      image: assets.testimonial_image_1,
-      testimonial: "I highly recommend Dright! Their fleet is amazing, and I always feel like I'm getting the best deal with excellent service."
+      name: "Ananya Deshmukh",
+      location: "Delhi NCR, India",
+      image: assets.testimonial_image_5,
+      rating: 5,
+      role: "Corporate Executive",
+      testimonial: "Opted for the Car + Driver package for client meetings across Gurgaon and Delhi. The chauffeur was punctual, courteous, and highly professional. Dright has redefined short-term rentals."
     }
   ];
 
@@ -42,18 +72,18 @@ const Testimonial = () => {
             key={index} className="bg-white p-6 rounded-xl shadow-lg hover:-translate-y-1 transition-all duration-500">
 
             <div className="flex items-center gap-3">
-              <img className="w-12 h-12 rounded-full" src={testimonial.image} alt={testimonial.name} />
+              <img className="w-12 h-12 rounded-full object-cover shadow-sm" src={testimonial.image} alt={testimonial.name} />
               <div>
-                <p className="text-xl">{testimonial.name}</p>
-                <p className="text-gray-500">{testimonial.location}</p>
+                <p className="text-lg font-semibold text-gray-800">{testimonial.name}</p>
+                <p className="text-xs text-gray-500">{testimonial.location} • <span className='text-primary font-medium'>{testimonial.role}</span></p>
               </div>
             </div>
-            <div className="flex items-center gap-1 mt-4">
-              {Array(5).fill(0).map((_, index) => (
-                <img key={index} src={assets.star_icon} alt="star-icon" />
+            <div className="flex items-center gap-1 mt-3">
+              {Array(testimonial.rating).fill(0).map((_, i) => (
+                <img key={i} src={assets.star_icon} alt="star-icon" className='w-4 h-4' />
               ))}
             </div>
-            <p className="text-gray-500 mt-4 font-light leading-relaxed">"{testimonial.testimonial}"</p>
+            <p className="text-gray-600 mt-4 text-sm font-light leading-relaxed">"{testimonial.testimonial}"</p>
           </motion.div>
         ))}
       </div>
