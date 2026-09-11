@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Title from '../components/Title'
-import { assets } from '../assets/assets'
+import { assets, cityList } from '../assets/assets'
 import CarCard from '../components/CarCard'
 import { useSearchParams } from 'react-router-dom'
 import { useAppContext } from '../context/AppContext'
@@ -18,24 +18,30 @@ const Cars = () => {
   const { cars, axios } = useAppContext()
 
   const [input, setInput] = useState('')
+  const [selectedCity, setSelectedCity] = useState(pickupLocation || '')
 
   const isSearchData = pickupLocation && pickupDate && returnDate
   const [filteredCars, setFilteredCars] = useState([])
 
   const applyFilter = async () => {
+    let filtered = cars.slice();
 
-    if (input === '') {
-      setFilteredCars(cars)
-      return null
+    if (selectedCity) {
+      filtered = filtered.filter(car => car.location && car.location.toLowerCase() === selectedCity.toLowerCase());
     }
 
-    const filtered = cars.slice().filter((car) => {
-      return car.brand.toLowerCase().includes(input.toLowerCase())
-        || car.model.toLowerCase().includes(input.toLowerCase())
-        || car.category.toLowerCase().includes(input.toLowerCase())
-        || car.transmission.toLowerCase().includes(input.toLowerCase())
-    })
-    setFilteredCars(filtered)
+    if (input.trim() !== '') {
+      const q = input.toLowerCase();
+      filtered = filtered.filter((car) => {
+        return car.brand.toLowerCase().includes(q)
+          || car.model.toLowerCase().includes(q)
+          || car.category.toLowerCase().includes(q)
+          || car.transmission.toLowerCase().includes(q)
+          || (car.location && car.location.toLowerCase().includes(q))
+      });
+    }
+
+    setFilteredCars(filtered);
   }
 
   const searchCarAvailablity = async () => {
@@ -60,7 +66,7 @@ const Cars = () => {
 
   useEffect(() => {
     cars.length > 0 && !isSearchData && applyFilter()
-  }, [input, cars])
+  }, [input, selectedCity, cars])
 
   return (
     <div>
@@ -78,12 +84,25 @@ const Cars = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
 
-          className='flex items-center bg-white px-4 mt-6 max-w-140 w-full h-12 rounded-full shadow'>
-          <img src={assets.search_icon} alt="" className='w-4.5 h-4.5 mr-2' />
+          className='flex flex-col sm:flex-row items-center gap-2 bg-white p-2 sm:px-4 mt-6 max-w-xl w-full rounded-2xl sm:rounded-full shadow'>
+          <div className='flex items-center flex-1 w-full h-11 px-2'>
+            <img src={assets.search_icon} alt="" className='w-4.5 h-4.5 mr-2 opacity-60' />
+            <input onChange={(e) => setInput(e.target.value)} value={input} type="text" placeholder='Search by make, model, or features' className='w-full h-full outline-none text-gray-600 text-sm' />
+          </div>
 
-          <input onChange={(e) => setInput(e.target.value)} value={input} type="text" placeholder='Search by make, model, or features' className='w-full h-full outline-none text-gray-500' />
-
-          <img src={assets.filter_icon} alt="" className='w-4.5 h-4.5 ml-2' />
+          <div className='flex items-center w-full sm:w-auto h-11 border-t sm:border-t-0 sm:border-l border-borderColor px-2 sm:pl-3'>
+            <img src={assets.location_icon} alt="" className='w-4 h-4 mr-2 opacity-60' />
+            <select
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
+              className='outline-none text-gray-600 text-sm bg-transparent cursor-pointer pr-2'
+            >
+              <option value="">All Locations</option>
+              {cityList.map((city) => (
+                <option key={city} value={city}>{city}</option>
+              ))}
+            </select>
+          </div>
         </motion.div>
       </motion.div>
 

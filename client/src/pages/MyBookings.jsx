@@ -61,9 +61,15 @@ const MyBookings = () => {
 
             {/* Booking Info */}
             <div className='md:col-span-2'>
-              <div className='flex items-center gap-2'>
+              <div className='flex items-center gap-2 flex-wrap'>
                 <p className='px-3 py-1.5 bg-light rounded'>Booking #{index+1}</p>
                 <p className={`px-3 py-1 text-xs rounded-full ${booking.status === 'confirmed' ? 'bg-green-400/15 text-green-600' : 'bg-red-400/15 text-red-600'}`}>{booking.status}</p>
+                <span className={`px-2.5 py-1 text-xs rounded-full font-medium ${booking.withDriver ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-gray-100 text-gray-600'}`}>
+                  {booking.withDriver ? 'Car + Driver' : 'Car Only'}
+                </span>
+                <span className={`px-2.5 py-1 text-xs rounded-full font-medium ${booking.pickupOption === 'delivery' ? 'bg-purple-50 text-purple-700 border border-purple-200' : 'bg-blue-50 text-blue-700 border border-blue-200'}`}>
+                  {booking.pickupOption === 'delivery' ? 'Home Delivery' : 'Self Pickup'}
+                </span>
               </div>
 
               <div className='flex items-start gap-2 mt-3'>
@@ -81,6 +87,13 @@ const MyBookings = () => {
                   <p>{booking.car.location}</p>
                 </div>
               </div>
+
+              {booking.pickupOption === 'delivery' && booking.deliveryAddress && (
+                <div className='flex items-start gap-2 mt-2 text-xs text-purple-700 bg-purple-50/80 px-2.5 py-1.5 rounded border border-purple-100'>
+                  <span className='font-semibold'>Delivery to:</span>
+                  <span>{booking.deliveryAddress}</span>
+                </div>
+              )}
             </div>
 
            {/* Price */}

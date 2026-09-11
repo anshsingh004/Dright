@@ -60,7 +60,17 @@ const ManageBookings = () => {
 
                 <td className='p-3 flex items-center gap-3'>
                   <img src={booking.car.image} alt="" className='h-12 w-12 aspect-square rounded-md object-cover'/>
-                  <p className='font-medium max-md:hidden'>{booking.car.brand} {booking.car.model}</p>
+                  <div>
+                    <p className='font-medium'>{booking.car.brand} {booking.car.model}</p>
+                    <div className='flex items-center gap-1.5 mt-1 flex-wrap'>
+                      <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${booking.withDriver ? 'bg-indigo-50 text-indigo-700' : 'bg-gray-100 text-gray-600'}`}>
+                        {booking.withDriver ? 'Driver' : 'Self-Drive'}
+                      </span>
+                      <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${booking.pickupOption === 'delivery' ? 'bg-purple-50 text-purple-700' : 'bg-blue-50 text-blue-700'}`}>
+                        {booking.pickupOption === 'delivery' ? 'Delivery' : 'Pickup'}
+                      </span>
+                    </div>
+                  </div>
                 </td>
 
                 <td className='p-3 max-md:hidden'>

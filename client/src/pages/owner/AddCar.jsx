@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Title from '../../components/owner/Title'
-import { assets } from '../../assets/assets'
+import { assets, cityList } from '../../assets/assets'
 import { useAppContext } from '../../context/AppContext'
 import toast from 'react-hot-toast'
 
@@ -20,6 +20,7 @@ const AddCar = () => {
     seating_capacity: 0,
     location: '',
     description: '',
+    driverAvailable: true,
   })
 
   const [isLoading, setIsLoading] = useState(false)
@@ -49,6 +50,7 @@ const AddCar = () => {
           seating_capacity: 0,
           location: '',
           description: '',
+          driverAvailable: true,
         })
       }else{
         toast.error(data.message)
@@ -141,14 +143,29 @@ const AddCar = () => {
          {/* Car Location */}
          <div className='flex flex-col w-full'>
             <label>Location</label>
-            <select onChange={e=> setCar({...car, location: e.target.value})} value={car.location} className='px-3 py-2 mt-1 border border-borderColor rounded-md outline-none'>
+            <select required onChange={e=> setCar({...car, location: e.target.value})} value={car.location} className='px-3 py-2 mt-1 border border-borderColor rounded-md outline-none'>
               <option value="">Select a location</option>
-              <option value="New York">New York</option>
-              <option value="Los Angeles">Los Angeles</option>
-              <option value="Houston">Houston</option>
-              <option value="Chicago">Chicago</option>
+              {cityList.map((city) => (
+                <option key={city} value={city}>{city}</option>
+              ))}
             </select>
          </div>
+
+        {/* Driver Service Toggle */}
+        <div className='flex items-center gap-3 p-3 bg-light rounded-lg border border-borderColor'>
+          <input
+            type="checkbox"
+            id="driver-available"
+            checked={car.driverAvailable}
+            onChange={e => setCar({...car, driverAvailable: e.target.checked})}
+            className='w-4 h-4 text-primary rounded cursor-pointer accent-primary'
+          />
+          <label htmlFor="driver-available" className='cursor-pointer select-none text-gray-700 font-medium'>
+            Driver service available
+            <span className='block text-xs text-gray-400 font-normal'>Customers will be able to request a professional driver with this car</span>
+          </label>
+        </div>
+
         {/* Car Description */}
          <div className='flex flex-col w-full'>
             <label>Description</label>

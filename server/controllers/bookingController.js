@@ -68,8 +68,8 @@ export const createBooking = async (req, res) => {
     try {
         console.log("createBooking request received");
         const { _id } = req.user;
-        const { car, pickupDate, returnDate } = req.body;
-        console.log("Booking payload:", { car, pickupDate, returnDate, userId: _id });
+        const { car, pickupDate, returnDate, withDriver, pickupOption, deliveryAddress } = req.body;
+        console.log("Booking payload:", { car, pickupDate, returnDate, withDriver, pickupOption, userId: _id });
 
         if (!car || !pickupDate || !returnDate) {
             return res.json({ success: false, message: "All booking details are required" });
@@ -104,6 +104,15 @@ export const createBooking = async (req, res) => {
             return res.json({ success: false, message: "Car is currently not available for rental" });
         }
 
+        // Validate driver availability when driver service is requested
+        const isWithDriver = Boolean(withDriver);
+        if (isWithDriver && carData.driverAvailable === false) {
+            return res.json({ success: false, message: "Driver service unavailable for this car" });
+        }
+
+        const validPickupOption = pickupOption === "delivery" ? "delivery" : "pickup";
+        const address = validPickupOption === "delivery" ? (deliveryAddress || "").trim() : "";
+
         const isAvailable = await checkAvailability(car, pickupDate, returnDate);
         console.log("Availability check result:", isAvailable);
 
@@ -123,6 +132,9 @@ export const createBooking = async (req, res) => {
             pickupDate: picked,
             returnDate: returned,
             price,
+            withDriver: isWithDriver,
+            pickupOption: validPickupOption,
+            deliveryAddress: address,
             status: "pending"
         });
         console.log("Booking created in DB");

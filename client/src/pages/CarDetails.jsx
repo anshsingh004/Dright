@@ -14,8 +14,12 @@ const CarDetails = () => {
 
   const navigate = useNavigate()
   const [car, setCar] = useState(null)
+  const [withDriver, setWithDriver] = useState(false)
+  const [pickupOption, setPickupOption] = useState('pickup')
+  const [deliveryAddress, setDeliveryAddress] = useState('')
 
   const currency = import.meta.env.VITE_CURRENCY
+  const isDriverAvailable = car ? car.driverAvailable !== false : true
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,11 +31,18 @@ const CarDetails = () => {
       toast.error('Return date cannot be earlier than pickup date');
       return;
     }
+    if (pickupOption === 'delivery' && !deliveryAddress.trim()) {
+      toast.error('Please enter a delivery address');
+      return;
+    }
     try {
       const { data } = await axios.post('/api/bookings/create', {
         car: id,
         pickupDate,
-        returnDate
+        returnDate,
+        withDriver: isDriverAvailable ? withDriver : false,
+        pickupOption,
+        deliveryAddress: pickupOption === 'delivery' ? deliveryAddress.trim() : ''
       })
 
       if (data.success) {
@@ -148,6 +159,87 @@ const CarDetails = () => {
             <label htmlFor="return-date">Return Date</label>
             <input value={returnDate} onChange={(e) => setReturnDate(e.target.value)}
               type="date" className='border border-borderColor px-3 py-2 rounded-lg' required id='return-date' min={pickupDate || new Date().toISOString().split('T')[0]} />
+          </div>
+
+          {/* Rental Option: Car Only vs Car + Driver */}
+          <div className='flex flex-col gap-2'>
+            <label className='font-medium text-gray-700 text-sm'>Rental Option</label>
+            <div className='grid grid-cols-2 gap-3'>
+              <button
+                type='button'
+                onClick={() => setWithDriver(false)}
+                className={`py-2 px-3 rounded-lg border text-sm font-medium transition-all cursor-pointer text-center ${
+                  !withDriver
+                    ? 'border-primary bg-primary/10 text-primary font-semibold'
+                    : 'border-borderColor text-gray-600 hover:border-gray-400'
+                }`}
+              >
+                Car Only
+              </button>
+
+              <button
+                type='button'
+                disabled={!isDriverAvailable}
+                onClick={() => isDriverAvailable && setWithDriver(true)}
+                className={`py-2 px-3 rounded-lg border text-sm font-medium transition-all text-center ${
+                  !isDriverAvailable
+                    ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : withDriver
+                    ? 'border-primary bg-primary/10 text-primary font-semibold cursor-pointer'
+                    : 'border-borderColor text-gray-600 hover:border-gray-400 cursor-pointer'
+                }`}
+              >
+                Car + Driver
+              </button>
+            </div>
+            {!isDriverAvailable && (
+              <p className='text-xs text-amber-600 bg-amber-50 px-2.5 py-1.5 rounded-md mt-1'>
+                Driver service unavailable for this car.
+              </p>
+            )}
+          </div>
+
+          {/* Pickup / Delivery Option */}
+          <div className='flex flex-col gap-2'>
+            <label className='font-medium text-gray-700 text-sm'>Fulfillment Option</label>
+            <div className='grid grid-cols-2 gap-3'>
+              <button
+                type='button'
+                onClick={() => setPickupOption('pickup')}
+                className={`py-2 px-3 rounded-lg border text-xs sm:text-sm font-medium transition-all cursor-pointer text-center ${
+                  pickupOption === 'pickup'
+                    ? 'border-primary bg-primary/10 text-primary font-semibold'
+                    : 'border-borderColor text-gray-600 hover:border-gray-400'
+                }`}
+              >
+                Pick up at location
+              </button>
+
+              <button
+                type='button'
+                onClick={() => setPickupOption('delivery')}
+                className={`py-2 px-3 rounded-lg border text-xs sm:text-sm font-medium transition-all cursor-pointer text-center ${
+                  pickupOption === 'delivery'
+                    ? 'border-primary bg-primary/10 text-primary font-semibold'
+                    : 'border-borderColor text-gray-600 hover:border-gray-400'
+                }`}
+              >
+                Deliver to address
+              </button>
+            </div>
+
+            {pickupOption === 'delivery' && (
+              <div className='mt-1'>
+                <input
+                  type='text'
+                  placeholder='Enter street delivery address...'
+                  value={deliveryAddress}
+                  onChange={(e) => setDeliveryAddress(e.target.value)}
+                  className='w-full border border-borderColor px-3 py-2 rounded-lg text-sm text-gray-700 outline-none focus:border-primary'
+                  required
+                />
+              </div>
+            )}
           </div>
 
           <button className='w-full bg-primary hover:bg-primary-dull transition-all py-3 font-medium text-white rounded-xl cursor-pointer'>Book Now</button>
