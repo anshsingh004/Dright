@@ -182,29 +182,6 @@ Dright/
 
 ---
 
-## 🔌 API Endpoints Reference
-
-| Method | Endpoint | Access | Description |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/user/register` | Public | Register new user account |
-| `POST` | `/api/user/login` | Public | Authenticate user & return JWT token |
-| `GET` | `/api/user/data` | Authenticated | Fetch current user session data |
-| `GET` | `/api/user/cars` | Public | List all active available cars |
-| `POST` | `/api/bookings/check-availability` | Public | Check available vehicles for date range & city |
-| `POST` | `/api/bookings/create` | Authenticated | Create booking with driver & fulfillment choice |
-| `GET` | `/api/bookings/user` | Authenticated | Retrieve customer booking history |
-| `GET` | `/api/bookings/owner` | Owner | Retrieve bookings for owner fleet |
-| `POST` | `/api/bookings/change-status` | Owner | Update booking status (`confirmed`, `cancelled`) |
-| `POST` | `/api/owner/change-role` | Authenticated | Upgrade user to owner role |
-| `POST` | `/api/owner/add-car` | Owner | Add vehicle with image upload & driver toggle |
-| `GET` | `/api/owner/cars` | Owner | List cars owned by logged-in user |
-| `POST` | `/api/owner/toggle-car` | Owner | Toggle car listing availability |
-| `POST` | `/api/owner/delete-car` | Owner | Remove car from marketplace |
-| `GET` | `/api/owner/dashboard` | Owner | Fleet metrics and revenue analytics |
-
-
----
-
 ## 🔮 Future Scope
 
 - **Online Payment Gateways:** (Stripe, Razorpay, UPI) — Currently using offline reservation settlement.
