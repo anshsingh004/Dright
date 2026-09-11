@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 
 const Login = () => {
 
-    const {setShowLogin, axios, setToken, navigate} = useAppContext()
+    const {setShowLogin, axios, setToken, setUser, setIsOwner, navigate, postLoginRedirect, setPostLoginRedirect} = useAppContext()
 
     const [state, setState] = React.useState("login");
     const [name, setName] = React.useState("");
@@ -17,10 +17,44 @@ const Login = () => {
             const {data} = await axios.post(`/api/user/${state}`, {name, email, password})
 
             if (data.success) {
-                navigate('/')
                 setToken(data.token)
                 localStorage.setItem('token', data.token)
                 setShowLogin(false)
+
+                // Fetch user data with the new token
+                axios.defaults.headers.common['Authorization'] = `${data.token}`
+                const userRes = await axios.get('/api/user/data')
+                if (userRes.data.success) {
+                    const loggedUser = userRes.data.user
+                    setUser(loggedUser)
+                    const isOwnerRole = loggedUser.role === 'owner'
+                    setIsOwner(isOwnerRole)
+
+                    if (postLoginRedirect) {
+                        const target = postLoginRedirect
+                        setPostLoginRedirect(null)
+                        if (target.startsWith('/owner')) {
+                            if (!isOwnerRole) {
+                                try {
+                                    const roleRes = await axios.post('/api/owner/change-role')
+                                    if (roleRes.data.success) {
+                                        setIsOwner(true)
+                                        toast.success(roleRes.data.message)
+                                    }
+                                } catch (e) {
+                                    console.error(e)
+                                }
+                            }
+                            navigate(target)
+                        } else {
+                            navigate(target)
+                        }
+                    } else {
+                        navigate('/')
+                    }
+                } else {
+                    navigate('/')
+                }
             }else{
                 toast.error(data.message)
             }

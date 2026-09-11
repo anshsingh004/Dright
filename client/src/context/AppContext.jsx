@@ -18,6 +18,7 @@ export const AppProvider = ({ children })=>{
     const [showLogin, setShowLogin] = useState(false)
     const [pickupDate, setPickupDate] = useState('')
     const [returnDate, setReturnDate] = useState('')
+    const [postLoginRedirect, setPostLoginRedirect] = useState(null)
 
     const [cars, setCars] = useState([])
 
@@ -72,10 +73,36 @@ export const AppProvider = ({ children })=>{
         }
     },[token])
 
+    // Handler to safely guide user into owner listing flow
+    const handleOwnerAction = async () => {
+        if (!user) {
+            setPostLoginRedirect('/owner/add-car')
+            setShowLogin(true)
+            return
+        }
+        if (isOwner) {
+            navigate('/owner/add-car')
+        } else {
+            try {
+                const { data } = await axios.post('/api/owner/change-role')
+                if (data.success) {
+                    setIsOwner(true)
+                    toast.success(data.message)
+                    navigate('/owner/add-car')
+                } else {
+                    toast.error(data.message)
+                }
+            } catch (error) {
+                toast.error(error.message)
+            }
+        }
+    }
+
     const value = {
         navigate, currency, axios, user, setUser,
         token, setToken, isOwner, setIsOwner, fetchUser, showLogin, setShowLogin, logout, fetchCars, cars, setCars, 
-        pickupDate, setPickupDate, returnDate, setReturnDate
+        pickupDate, setPickupDate, returnDate, setReturnDate,
+        postLoginRedirect, setPostLoginRedirect, handleOwnerAction
     }
 
     return (

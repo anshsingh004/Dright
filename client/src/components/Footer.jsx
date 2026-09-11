@@ -2,8 +2,11 @@ import React from 'react'
 import { assets } from '../assets/assets'
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
+import { useAppContext } from '../context/AppContext';
 
 const Footer = () => {
+    const { handleOwnerAction } = useAppContext()
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -60,7 +63,7 @@ const Footer = () => {
                         <ul className='mt-3 flex flex-col gap-1.5'>
                             <li><Link to="/" className="hover:text-primary transition-colors">Home</Link></li>
                             <li><Link to="/cars" className="hover:text-primary transition-colors">Browse Cars</Link></li>
-                            <li><Link to="/owner" className="hover:text-primary transition-colors">List Your Car</Link></li>
+                            <li><button onClick={handleOwnerAction} className="hover:text-primary transition-colors text-left cursor-pointer">List Your Car</button></li>
                         </ul>
                     </div>
 

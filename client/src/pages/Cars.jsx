@@ -14,30 +14,59 @@ const Cars = () => {
   const pickupLocation = searchParams.get('pickupLocation')
   const pickupDate = searchParams.get('pickupDate')
   const returnDate = searchParams.get('returnDate')
+  const urlSearch = searchParams.get('search') || searchParams.get('q') || ''
 
   const { cars, axios } = useAppContext()
 
-  const [input, setInput] = useState('')
+  const [input, setInput] = useState(urlSearch)
   const [selectedCity, setSelectedCity] = useState(pickupLocation || '')
+  const [availableCars, setAvailableCars] = useState([])
 
-  const isSearchData = pickupLocation && pickupDate && returnDate
+  const isSearchData = Boolean(pickupLocation && pickupDate && returnDate)
   const [filteredCars, setFilteredCars] = useState([])
 
-  const applyFilter = async () => {
-    let filtered = cars.slice();
+  // Keep input in sync with URL search parameter if it changes
+  useEffect(() => {
+    if (urlSearch) {
+      setInput(urlSearch)
+    }
+  }, [urlSearch])
+
+  // Keep selectedCity in sync with URL pickup location if it changes
+  useEffect(() => {
+    if (pickupLocation) {
+      setSelectedCity(pickupLocation)
+    }
+  }, [pickupLocation])
+
+  const applyFilter = () => {
+    const sourceList = (isSearchData && availableCars.length > 0) ? availableCars : cars;
+    let filtered = sourceList.slice();
 
     if (selectedCity) {
       filtered = filtered.filter(car => car.location && car.location.toLowerCase() === selectedCity.toLowerCase());
     }
 
     if (input.trim() !== '') {
-      const q = input.toLowerCase();
+      const q = input.trim().toLowerCase();
       filtered = filtered.filter((car) => {
-        return car.brand.toLowerCase().includes(q)
-          || car.model.toLowerCase().includes(q)
-          || car.category.toLowerCase().includes(q)
-          || car.transmission.toLowerCase().includes(q)
-          || (car.location && car.location.toLowerCase().includes(q))
+        const brand = (car.brand || '').toLowerCase();
+        const model = (car.model || '').toLowerCase();
+        const fullName = `${brand} ${model}`;
+        const category = (car.category || '').toLowerCase();
+        const transmission = (car.transmission || '').toLowerCase();
+        const fuelType = (car.fuel_type || '').toLowerCase();
+        const location = (car.location || '').toLowerCase();
+
+        return (
+          brand.includes(q) ||
+          model.includes(q) ||
+          fullName.includes(q) ||
+          category.includes(q) ||
+          transmission.includes(q) ||
+          fuelType.includes(q) ||
+          location.includes(q)
+        );
       });
     }
 
@@ -48,6 +77,7 @@ const Cars = () => {
     try {
       const { data } = await axios.post('/api/bookings/check-availability', { location: pickupLocation, pickupDate, returnDate })
       if (data.success) {
+        setAvailableCars(data.availableCars)
         setFilteredCars(data.availableCars)
         if (data.availableCars.length === 0) {
           toast('No cars available for the selected dates and location')
@@ -61,12 +91,16 @@ const Cars = () => {
   }
 
   useEffect(() => {
-    isSearchData && searchCarAvailablity()
-  }, [])
+    if (isSearchData) {
+      searchCarAvailablity()
+    }
+  }, [pickupLocation, pickupDate, returnDate])
 
   useEffect(() => {
-    cars.length > 0 && !isSearchData && applyFilter()
-  }, [input, selectedCity, cars])
+    if (cars.length > 0) {
+      applyFilter()
+    }
+  }, [input, selectedCity, cars, availableCars, isSearchData])
 
   return (
     <div>
@@ -114,17 +148,29 @@ const Cars = () => {
         className='px-6 md:px-16 lg:px-24 xl:px-32 mt-10'>
         <p className='text-gray-500 xl:px-20 max-w-7xl mx-auto'>Showing {filteredCars.length} Cars</p>
 
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-4 xl:px-20 max-w-7xl mx-auto'>
-          {filteredCars.map((car, index) => (
-            <motion.div key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 * index, duration: 0.4 }}
+        {filteredCars.length === 0 ? (
+          <div className='text-center py-16 xl:px-20 max-w-7xl mx-auto'>
+            <p className='text-gray-500 text-base'>No cars found matching your criteria.</p>
+            <button 
+              onClick={() => { setInput(''); setSelectedCity(''); }}
+              className='mt-4 px-5 py-2 bg-primary text-white text-xs sm:text-sm rounded-lg hover:bg-primary-dull transition-all cursor-pointer'
             >
-              <CarCard car={car} />
-            </motion.div>
-          ))}
-        </div>
+              Clear Search & Filters
+            </button>
+          </div>
+        ) : (
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-4 xl:px-20 max-w-7xl mx-auto'>
+            {filteredCars.map((car, index) => (
+              <motion.div key={car._id || index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * (index % 6), duration: 0.4 }}
+              >
+                <CarCard car={car} />
+              </motion.div>
+            ))}
+          </div>
+        )}
       </motion.div>
 
     </div>
