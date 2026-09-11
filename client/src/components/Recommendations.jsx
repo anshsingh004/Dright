@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react'
 import Title from './Title'
 import CarCard from './CarCard'
 import { useAppContext } from '../context/AppContext'
-import { motion } from 'motion/react'
 
 const Recommendations = () => {
   const { cars } = useAppContext()
