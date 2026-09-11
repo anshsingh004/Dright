@@ -67,13 +67,7 @@ const Recommendations = () => {
   if (availableCars.length === 0) return null
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: 'easeOut' }}
-      viewport={{ once: true, amount: 0.2 }}
-      className='py-20 px-6 md:px-16 lg:px-24 xl:px-32 bg-light/50 border-y border-borderColor'
-    >
+    <div className='py-20 px-6 md:px-16 lg:px-24 xl:px-32 bg-light/50 border-y border-borderColor'>
       <div className='flex flex-col items-center text-center'>
         <Title
           title='Top Recommendations by Vehicle Type'
@@ -83,27 +77,32 @@ const Recommendations = () => {
         {/* Category Tabs */}
         {categories.length > 1 && (
           <div className='flex flex-wrap items-center justify-center gap-2 mt-8 p-1.5 bg-white border border-borderColor rounded-full shadow-sm max-w-xl'>
-            {categories.map((cat) => (
+            {categories.map(cat => (
               <button
                 key={cat}
+                type='button'
                 onClick={() => setActiveCategory(cat)}
-                className={`px-5 py-2 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer ${
+                className={`px-4 py-1.5 rounded-full text-xs md:text-sm font-medium transition-all ${
                   activeCategory === cat
                     ? 'bg-primary text-white shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >
-                {cat === 'All' ? 'Top Picks' : `Top 3 ${cat}s`}
+                {cat === 'All' ? 'All Classes' : cat}
               </button>
             ))}
           </div>
         )}
       </div>
 
-      {/* Grid of Recommended Cars */}
-      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-12 max-w-7xl mx-auto'>
+      {/* Grid of Recommended Vehicles */}
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-12'>
         {displayedCars.map((car, index) => {
-          const rank = (index % 3) + 1
+          // Identify rank within its own category
+          const catList = recommendationsByCategory[car.category] || []
+          const rankIndex = catList.findIndex(c => c._id === car._id)
+          const rank = rankIndex !== -1 ? rankIndex + 1 : (index % 3) + 1
+
           const rankBadge =
             rank === 1
               ? '#1 Top Pick'
@@ -112,20 +111,13 @@ const Recommendations = () => {
               : '#3 Popular Choice'
 
           return (
-            <motion.div
-              key={car._id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: (index % 3) * 0.15, duration: 0.4 }}
-              viewport={{ once: true }}
-              className='relative'
-            >
+            <div key={car._id} className='relative'>
               <CarCard car={car} rankBadge={rankBadge} />
-            </motion.div>
+            </div>
           )
         })}
       </div>
-    </motion.div>
+    </div>
   )
 }
 
