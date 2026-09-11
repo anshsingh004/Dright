@@ -7,8 +7,6 @@
 
 > **Dright** is a full-stack car rental application designed to provide a seamless experience for both users looking to rent cars and car owners wanting to list their vehicles. Built on the MERN stack with modern Tailwind CSS and Framer Motion animations, Dright features dynamic date-based availability, chauffeur options, home delivery fulfillment, and dual dashboards.
 
-🔗 **Live Deployment:** [https://drightapp.vercel.app/](https://drightapp.vercel.app/)
-
 ---
 
 ## 🚀 Implemented Features
