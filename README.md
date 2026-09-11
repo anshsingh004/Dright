@@ -1,7 +1,6 @@
 # Dright — Premium Car Rental Marketplace
 
 [![Live Deployment](https://img.shields.io/badge/Live_Demo-drightapp.vercel.app-0070f3?style=for-the-badge&logo=vercel)](https://drightapp.vercel.app/)
-[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg?style=for-the-badge)](https://opensource.org/licenses/ISC)
 [![React](https://img.shields.io/badge/Frontend-React_19_+_Vite-61dafb?style=for-the-badge&logo=react)](https://react.dev/)
 [![Node.js](https://img.shields.io/badge/Backend-Node.js_+_Express_5-339933?style=for-the-badge&logo=node.js)](https://nodejs.org/)
 [![MongoDB](https://img.shields.io/badge/Database-MongoDB_Atlas-47a248?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
@@ -205,104 +204,17 @@ Dright/
 | `POST` | `/api/owner/delete-car` | Owner | Remove car from marketplace |
 | `GET` | `/api/owner/dashboard` | Owner | Fleet metrics and revenue analytics |
 
----
-
-## ⚙️ Installation & Local Setup
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/anshsingh004/Dright.git
-cd Dright
-```
-
-### 2. Configure Backend
-```bash
-cd server
-npm install
-```
-
-Copy the environment template and provide your database/API keys:
-```bash
-cp .env.example .env
-```
-Contents of `server/.env`:
-```env
-PORT=3000
-MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_key
-IMAGEKIT_PUBLIC_KEY=your_imagekit_public_key
-IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
-IMAGEKIT_URL_ENDPOINT=your_imagekit_url_endpoint
-```
-
-Start the server:
-```bash
-npm start
-# Server runs on http://localhost:3000
-```
-
-### 3. Configure Frontend
-Open a separate terminal:
-```bash
-cd client
-npm install
-```
-
-Copy the environment template:
-```bash
-cp .env.example .env
-```
-Contents of `client/.env`:
-```env
-VITE_BASE_URL=http://localhost:3000
-VITE_CURRENCY=$
-```
-
-Start the Vite development server:
-```bash
-npm run dev
-# Application opens at http://localhost:5173
-```
 
 ---
 
-## 🧪 Verification & Automated Testing
+## 🔮 Future Scope
 
-Run the automated test suites to verify availability math, driver rules, and location consistency:
-
-```bash
-# Verify availability & date overlap logic (8 test cases)
-node scratch/test_availability_logic.js
-
-# Verify driver availability, fulfillment options, and location consistency
-node scratch/test_phase2_3_4.js
-
-# Verify category recommendations and authentic reviews
-node scratch/test_recommendations_and_reviews.js
-
-# Verify production client build
-cd client && npm run build
-```
-
----
-
-## 🔮 Future Scope (Intentionally Deferred)
-
-In order to guarantee stability and zero deployment risk for Round 2, the following features are intentionally deferred:
 - **Online Payment Gateways:** (Stripe, Razorpay, UPI) — Currently using offline reservation settlement.
 - **Email / SMS Notification Services:** (Resend, SendGrid, Twilio) — Newsletter and alerts reserved for post-submission.
 - **Live GPS & Telematics:** Real-time driver navigation and route tracking.
 
----
-
-## 🛡️ Git Safety & Rollback Reference
-
-A known-good baseline reference tag is permanently preserved:
-```bash
-git checkout baseline-known-good
-```
 
 ---
 
 ## 📄 License
-This project is licensed under the **ISC License**.
+All rights reserved.
