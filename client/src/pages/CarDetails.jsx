@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { assets, dummyCarData } from '../assets/assets'
+import { assets } from '../assets/assets'
 import Loader from '../components/Loader'
 import { useAppContext } from '../context/AppContext'
 import toast from 'react-hot-toast'
@@ -19,6 +19,14 @@ const CarDetails = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!pickupDate || !returnDate) {
+      toast.error('Please select both pickup and return dates');
+      return;
+    }
+    if (new Date(returnDate) < new Date(pickupDate)) {
+      toast.error('Return date cannot be earlier than pickup date');
+      return;
+    }
     try {
       const { data } = await axios.post('/api/bookings/create', {
         car: id,
@@ -139,7 +147,7 @@ const CarDetails = () => {
           <div className='flex flex-col gap-2'>
             <label htmlFor="return-date">Return Date</label>
             <input value={returnDate} onChange={(e) => setReturnDate(e.target.value)}
-              type="date" className='border border-borderColor px-3 py-2 rounded-lg' required id='return-date' />
+              type="date" className='border border-borderColor px-3 py-2 rounded-lg' required id='return-date' min={pickupDate || new Date().toISOString().split('T')[0]} />
           </div>
 
           <button className='w-full bg-primary hover:bg-primary-dull transition-all py-3 font-medium text-white rounded-xl cursor-pointer'>Book Now</button>

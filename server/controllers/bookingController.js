@@ -4,38 +4,64 @@ import Car from "../models/Car.js";
 
 // Function to Check Availability of Car for a given Date
 const checkAvailability = async (car, pickupDate, returnDate) => {
+    const pickup = new Date(pickupDate);
+    const ret = new Date(returnDate);
+
     const bookings = await Booking.find({
         car,
-        pickupDate: { $lte: returnDate },
-        returnDate: { $gte: pickupDate },
-    })
+        status: { $in: ["pending", "confirmed"] },
+        pickupDate: { $lte: ret },
+        returnDate: { $gte: pickup },
+    });
     return bookings.length === 0;
-}
+};
 
 // API to Check Availability of Cars for the given Date and location
 export const checkAvailabilityOfCar = async (req, res) => {
     try {
-        const { location, pickupDate, returnDate } = req.body
+        const { location, pickupDate, returnDate } = req.body;
 
-        // fetch all available cars for the given location
-        const cars = await Car.find({ location, isAvaliable: true })
+        if (!pickupDate || !returnDate) {
+            return res.json({ success: false, message: "Pickup and return dates are required" });
+        }
+
+        const picked = new Date(pickupDate);
+        const returned = new Date(returnDate);
+
+        if (isNaN(picked.getTime()) || isNaN(returned.getTime())) {
+            return res.json({ success: false, message: "Invalid date format" });
+        }
+
+        const pickedDay = new Date(picked.getFullYear(), picked.getMonth(), picked.getDate());
+        const returnedDay = new Date(returned.getFullYear(), returned.getMonth(), returned.getDate());
+
+        if (returnedDay < pickedDay) {
+            return res.json({ success: false, message: "Return date cannot be earlier than pickup date" });
+        }
+
+        // fetch all available cars (filter by location if specified)
+        const query = { isAvaliable: true };
+        if (location && location.trim() !== '') {
+            query.location = location.trim();
+        }
+        const cars = await Car.find(query);
 
         // check car availability for the given date range using promise
         const availableCarsPromises = cars.map(async (car) => {
-            const isAvailable = await checkAvailability(car._id, pickupDate, returnDate)
-            return { ...car._doc, isAvailable: isAvailable }
-        })
+            const isAvailable = await checkAvailability(car._id, pickupDate, returnDate);
+            return { ...car._doc, isAvailable };
+        });
 
         let availableCars = await Promise.all(availableCarsPromises);
-        availableCars = availableCars.filter(car => car.isAvailable === true)
+        availableCars = availableCars.filter(car => car.isAvailable === true);
 
-        res.json({ success: true, availableCars })
+        res.json({ success: true, availableCars });
 
     } catch (error) {
         console.log(error.message);
-        res.json({ success: false, message: error.message })
+        res.json({ success: false, message: error.message });
     }
-}
+};
 
 // API to Create Booking
 export const createBooking = async (req, res) => {
@@ -45,31 +71,69 @@ export const createBooking = async (req, res) => {
         const { car, pickupDate, returnDate } = req.body;
         console.log("Booking payload:", { car, pickupDate, returnDate, userId: _id });
 
-        const isAvailable = await checkAvailability(car, pickupDate, returnDate)
+        if (!car || !pickupDate || !returnDate) {
+            return res.json({ success: false, message: "All booking details are required" });
+        }
+
+        const picked = new Date(pickupDate);
+        const returned = new Date(returnDate);
+
+        if (isNaN(picked.getTime()) || isNaN(returned.getTime())) {
+            return res.json({ success: false, message: "Invalid date format" });
+        }
+
+        const pickedDay = new Date(picked.getFullYear(), picked.getMonth(), picked.getDate());
+        const returnedDay = new Date(returned.getFullYear(), returned.getMonth(), returned.getDate());
+        const today = new Date();
+        const todayDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+        if (pickedDay < todayDay) {
+            return res.json({ success: false, message: "Pickup date cannot be in the past" });
+        }
+
+        if (returnedDay < pickedDay) {
+            return res.json({ success: false, message: "Return date cannot be earlier than pickup date" });
+        }
+
+        const carData = await Car.findById(car);
+        if (!carData) {
+            return res.json({ success: false, message: "Car not found" });
+        }
+
+        if (!carData.isAvaliable) {
+            return res.json({ success: false, message: "Car is currently not available for rental" });
+        }
+
+        const isAvailable = await checkAvailability(car, pickupDate, returnDate);
         console.log("Availability check result:", isAvailable);
 
         if (!isAvailable) {
-            return res.json({ success: false, message: "Car is not available" })
+            return res.json({ success: false, message: "Car is not available for the selected dates" });
         }
 
-        const carData = await Car.findById(car)
-
-        // Calculate price based on pickupDate and returnDate
-        const picked = new Date(pickupDate);
-        const returned = new Date(returnDate);
-        const noOfDays = Math.ceil((returned - picked) / (1000 * 60 * 60 * 24))
+        // Calculate price based on pickupDate and returnDate (minimum 1 day)
+        const diffTime = returnedDay - pickedDay;
+        const noOfDays = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
         const price = carData.pricePerDay * noOfDays;
 
-        await Booking.create({ car, owner: carData.owner, user: _id, pickupDate, returnDate, price })
+        await Booking.create({
+            car,
+            owner: carData.owner,
+            user: _id,
+            pickupDate: picked,
+            returnDate: returned,
+            price,
+            status: "pending"
+        });
         console.log("Booking created in DB");
 
-        res.json({ success: true, message: "Booking Created" })
+        res.json({ success: true, message: "Booking Created" });
 
     } catch (error) {
         console.log("Error in createBooking:", error.message);
-        res.json({ success: false, message: error.message })
+        res.json({ success: false, message: error.message });
     }
-}
+};
 
 // API to List User Bookings 
 export const getUserBookings = async (req, res) => {

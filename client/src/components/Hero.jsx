@@ -2,8 +2,7 @@ import React, { useState } from 'react'
 import { assets, cityList } from '../assets/assets'
 import { useAppContext } from '../context/AppContext'
 import { motion } from 'motion/react'
-
-
+import toast from 'react-hot-toast'
 
 const Hero = () => {
 
@@ -13,6 +12,10 @@ const Hero = () => {
 
     const handleSearch = (e) => {
         e.preventDefault()
+        if (pickupDate && returnDate && new Date(returnDate) < new Date(pickupDate)) {
+            toast.error('Return date cannot be earlier than pickup date')
+            return
+        }
         navigate('/cars?pickupLocation=' + pickupLocation + '&pickupDate=' + pickupDate + '&returnDate=' + returnDate)
     }
 
@@ -49,7 +52,7 @@ const Hero = () => {
                     </div>
                     <div className='flex flex-col items-start gap-2'>
                         <label htmlFor='return-date'>Return Date</label>
-                        <input value={returnDate} onChange={e => setReturnDate(e.target.value)} type="date" id="return-date" className='text-sm text-gray-500' required />
+                        <input value={returnDate} onChange={e => setReturnDate(e.target.value)} type="date" id="return-date" min={pickupDate || new Date().toISOString().split('T')[0]} className='text-sm text-gray-500' required />
                     </div>
 
                 </div>
