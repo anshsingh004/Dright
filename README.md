@@ -6,52 +6,60 @@
 [![Node.js](https://img.shields.io/badge/Backend-Node.js_+_Express_5-339933?style=for-the-badge&logo=node.js)](https://nodejs.org/)
 [![MongoDB](https://img.shields.io/badge/Database-MongoDB_Atlas-47a248?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
 
-> **Dright** is a full-stack, enterprise-ready car rental marketplace engineered with the MERN stack. Designed to connect vehicle owners with discerning renters, Dright pairs real-time booking availability with flexible chauffeur options, home delivery fulfillment, and an intuitive dual-dashboard architecture.
+> **Dright** is a full-stack car rental application designed to provide a seamless experience for both users looking to rent cars and car owners wanting to list their vehicles. Built on the MERN stack with modern Tailwind CSS and Framer Motion animations, Dright features dynamic date-based availability, chauffeur options, home delivery fulfillment, and dual dashboards.
+
+🔗 **Live Deployment:** [https://drightapp.vercel.app/](https://drightapp.vercel.app/)
 
 ---
 
-## 🌟 Key Highlights & Feature Matrix
+## 🚀 Implemented Features
 
-### 1. 📅 Automatic Booking-Based Availability Engine
-- **No Cron Jobs / No Polling:** Car availability is computed dynamically on-demand using date overlap mathematical logic:
-  $$\text{booking.pickupDate} \le \text{requested.returnDate} \quad \text{AND} \quad \text{booking.returnDate} \ge \text{requested.pickupDate}$$
-- **Status Filtering:** `pending` and `confirmed` bookings block the car; `cancelled` bookings instantly release the vehicle.
-- **Double-Booking Guard:** Real-time database locking verifies zero date collisions before booking creation.
-- **Strict Date Range Validation:** Rejects past dates, missing fields, or return dates earlier than pickup dates. Minimum 1-day rental pricing calculation prevents zero-cost exploits.
+### 🔍 Discovery & Availability
+- **Car Discovery & Search:** Browse an extensive fleet with dynamic brand, model, transmission, and category keyword filtering.
+- **Location-Based Search:** Search across 18 major metropolitan locations with a centralized, unified location engine.
+- **Date-Based Automatic Availability:** Calculates availability dynamically on demand based on rental period overlap with active bookings.
+- **Top 3 Category Recommendations:** Automatically surfaces the top 3 recommended vehicles in every category (SUVs, Sedans, Vans) ranked deterministically by model year and rate.
 
-### 2. 👨‍✈️ Flexible Rental Options (Car Only vs. Car + Driver)
-- **Chauffeur Availability Control:** Car owners can toggle whether a driver service is available on their vehicle directly from the listing portal.
-- **Customer Selection:** Renters choose between **Self-Drive (Car Only)** and **Car + Driver** during booking.
-- **Defensive Backend Guard:** Backend rejects any driver-inclusive booking if the selected car has driver services disabled.
-- **Zero Overhead:** No separate driver accounts or driver dashboards; seamless owner fulfillment model.
+### 🚗 Booking & Rental Experience
+- **Intuitive Booking Process:** Select pickup and return dates with interactive calendar restrictions preventing past dates or invalid ranges.
+- **Car-Only / Chauffeur Option:** Choose between Self-Drive (*Car Only*) and *Car + Driver* when booking. Disabled with a clear alert if the owner does not offer driver service.
+- **Pickup vs. Home Delivery:** Select *Pick up at location* or *Deliver to address* with direct street address capture.
+- **User Dashboard (`/my-bookings`):** Track all current and past bookings with driver option, fulfillment tags, and delivery destinations.
 
-### 3. 🚚 Pickup vs. Home Delivery Fulfillment
-- **Fulfillment Choice:** Renters can pick up the vehicle at the owner's hub or request direct **Home Delivery**.
-- **Doorstep Address Input:** Selecting delivery opens an integrated street address field saved directly to the booking record.
-- **Visual Badges:** Booking cards on both User and Owner dashboards prominently display the chosen fulfillment type and destination address.
+### 💼 Owner Fleet Management (`/owner`)
+- **Owner Dashboard:** Track fleet metrics, active bookings, completed rentals, and monthly revenue.
+- **Add / Manage Cars:** List new vehicles with ImageKit cloud image optimization and toggle driver service availability.
+- **Real-Time Booking Management:** Accept or decline incoming customer booking requests (`pending`, `confirmed`, `cancelled`).
 
-### 4. 🌍 Expanded Centralized Geographic Coverage
-- **18 Major Hubs:** Expanded from the initial 4 cities to 18 metropolitan locations across India and international hubs:
-  - *International:* New York, Los Angeles, Houston, Chicago
-  - *India:* Delhi, Gurgaon, Noida, Mumbai, Bengaluru, Hyderabad, Chennai, Pune, Kolkata, Ahmedabad, Jaipur, Chandigarh, Dehradun, Goa
-- **Single Source of Truth:** Centralized `cityList` configuration ensures identical location options across homepage search, car filtering, owner listing forms, and catalog navigation.
-
-### 5. 🏆 Top 3 Category Recommendations
-- **Categorized Curations:** Dynamic recommendation engine categorizes available cars (SUVs, Sedans, Vans).
-- **Deterministic Ranking:** Ranks vehicles by recency (model year), best daily rate value, and listing freshness.
-- **Visual Curation Badges:** Displays `#1 Top Pick`, `#2 Recommended`, and `#3 Popular Choice` badges on top vehicles.
-- **Availability Aware:** Only currently bookable, active vehicles appear in recommendations.
-
-### 6. ⭐ Populated Authentic Testimonials & Reviews
-- **Rich Experience Showcases:** Real customer reviews across key touchpoints: booking speed, vehicle condition, chauffeur professionalism, cleanliness, and home delivery convenience.
-- **Individual High-Resolution Avatars:** Distinct, unrepeated photographic assets for every reviewer with verified renter badges.
-
-### 7. 🛡️ Production Deep-Linking & Vercel SPA Routing
-- **Zero 404s on Refresh:** Configured `client/vercel.json` SPA rewrites ensuring direct navigation to `/cars`, `/owner`, and `/my-bookings` routes seamlessly on Vercel CDN.
+### 🛡️ Authentication & Reviews
+- **JWT Authentication:** Secure user and owner login and registration with bcrypt password encryption.
+- **Authentic Reviews:** Rich, varied customer reviews covering chauffeur experience, vehicle condition, cleanliness, delivery ease, and booking value.
 
 ---
 
-## 🏗 System Architecture
+## 🛠 Technology Stack
+
+### Client (Frontend)
+- **React 19:** Component-based UI library.
+- **Vite:** Next-generation frontend build tooling.
+- **Tailwind CSS (v4):** Modern utility-first styling.
+- **Framer Motion:** Declarative page transitions and micro-animations.
+- **Axios:** Promise-based HTTP client for API communication.
+- **React Router (v7):** Single Page Application client-side routing.
+- **React Hot Toast:** Notification alerts for user feedback.
+
+### Server (Backend)
+- **Node.js:** Server-side JavaScript runtime.
+- **Express.js (v5):** RESTful API micro-framework.
+- **MongoDB Atlas & Mongoose:** NoSQL database with strict schema modeling.
+- **JSON Web Tokens (JWT):** Stateless bearer token authentication.
+- **Bcrypt:** Cryptographic salt-and-hash password encryption.
+- **Multer:** Middleware for `multipart/form-data` uploads.
+- **ImageKit:** Cloud media CDN for real-time WebP conversion and optimization.
+
+---
+
+## 🏗 Architecture & System Overview
 
 ```
                                ┌────────────────────────┐
@@ -73,151 +81,217 @@
  └─────────────────────┘                                        └─────────────────────┘
 ```
 
+- **React Client:** Serves the responsive SPA interface. Handles token persistence in `localStorage`, client-side date restrictions, and reactive filtering.
+- **Express Server:** Provides modular controllers and routes (`/api/user`, `/api/bookings`, `/api/owner`) protected with custom JWT verification middleware.
+- **MongoDB & Mongoose:** Enforces backward-compatible document schemas for `User`, `Car`, and `Booking`.
+- **Authentication:** Stateless authentication via JWT headers (`Authorization: <token>`). Roles distinguish standard users from car owners.
+- **Image Handling:** Vehicle images uploaded by owners are passed through Multer into memory buffers, uploaded directly to ImageKit, and transformed into optimized WebP URLs.
+
 ---
 
-## 📊 Database Schema Models
+## 🔄 Core User Flows
 
-### `User` Model
-| Field | Type | Description |
-| :--- | :--- | :--- |
-| `name` | String | Full name of the user |
-| `email` | String | Unique email address (indexed) |
-| `password` | String | Bcrypt-hashed password |
-| `role` | String | Enum: `["user", "owner"]` (default: `"user"`) |
-| `image` | String | Profile avatar URL |
+### Customer Flow
+```
+Browse Fleet ──▶ Select Car ──▶ Choose Dates ──▶ Rental Option ──▶ Fulfillment ──▶ Confirm Booking
+(Search/Filter) (Car Details)   (Calendar Min)   (Car/Driver)     (Pickup/Home)  (/my-bookings)
+```
 
-### `Car` Model
-| Field | Type | Description |
-| :--- | :--- | :--- |
-| `owner` | ObjectId | Reference to `User` model |
-| `brand` | String | Manufacturer make (e.g. BMW, Toyota) |
-| `model` | String | Model designation (e.g. X5, Corolla) |
-| `image` | String | Hosted image URL (ImageKit) |
-| `year` | Number | Manufacturing year |
-| `category` | String | Vehicle class (`Sedan`, `SUV`, `Van`) |
-| `seating_capacity` | Number | Passenger seat count (sanitized $\ge 1$) |
-| `fuel_type` | String | Fuel configuration (`Petrol`, `Diesel`, `Hybrid`, `Electric`) |
-| `transmission` | String | Gearbox type (`Automatic`, `Manual`, `Semi-Automatic`) |
-| `pricePerDay` | Number | Daily rental rate |
-| `location` | String | Home city/hub (from centralized `cityList`) |
-| `description` | String | Vehicle description and overview |
-| `isAvaliable` | Boolean | Listing-level owner availability toggle (*preserved spelling*) |
-| `driverAvailable` | Boolean | Whether chauffeur service can be requested (*default: true*) |
+### Owner Flow
+```
+Login ──▶ Owner Portal ──▶ List Car ──▶ Set Driver Option ──▶ Manage Bookings ──▶ Confirm / Cancel
+```
 
-### `Booking` Model
-| Field | Type | Description |
-| :--- | :--- | :--- |
-| `car` | ObjectId | Reference to booked `Car` |
-| `user` | ObjectId | Reference to renting `User` |
-| `owner` | ObjectId | Reference to vehicle `owner` |
-| `pickupDate` | Date | Start of rental period (inclusive) |
-| `returnDate` | Date | End of rental period (inclusive) |
-| `status` | String | Enum: `["pending", "confirmed", "cancelled"]` |
-| `price` | Number | Total booking price (days $\times$ pricePerDay) |
-| `withDriver` | Boolean | Chauffeur requested (*default: false*) |
-| `pickupOption` | String | Enum: `["pickup", "delivery"]` (*default: "pickup"*) |
-| `deliveryAddress` | String | Street delivery address when delivery is chosen |
+---
+
+## 📅 Automatic Availability Logic
+
+Car availability is evaluated dynamically without cron jobs or background pollers:
+
+$$\text{Existing Booking: } \text{pickupDate} \le \text{Requested Return} \quad \text{AND} \quad \text{returnDate} \ge \text{Requested Pickup}$$
+
+1. **Active Bookings:** Bookings with `status: "pending"` or `"confirmed"` mark the car as unavailable for overlapping dates.
+2. **Cancelled Bookings:** Bookings with `status: "cancelled"` release the car immediately.
+3. **Double-Booking Guard:** If two users request the same car for overlapping dates, the first submitted booking claims the vehicle; subsequent requests are rejected.
+
+---
+
+## 📁 Project Structure
+
+```text
+Dright/
+├── client/                     # Vite + React Frontend
+│   ├── public/                 # Static assets (favicons, manifest)
+│   ├── src/
+│   │   ├── assets/             # Images, icons, and centralized cityList
+│   │   ├── components/         # Reusable UI components (Navbar, CarCard, Recommendations, etc.)
+│   │   ├── context/            # AppContext (global state, auth, cars, dates)
+│   │   ├── pages/              # Pages: Home, Cars, CarDetails, MyBookings, Legal
+│   │   │   └── owner/          # Owner Pages: Dashboard, AddCar, ManageCars, ManageBookings
+│   │   ├── App.jsx             # Route definitions
+│   │   └── main.jsx            # Entry point
+│   ├── .env.example            # Client environment template
+│   ├── package.json
+│   ├── vercel.json             # Vercel SPA client-side rewrite rules
+│   └── vite.config.js
+│
+├── server/                     # Express.js REST API Backend
+│   ├── configs/                # MongoDB & ImageKit configurations
+│   ├── controllers/            # userController, ownerController, bookingController
+│   ├── middleware/             # authMiddleware (JWT verification)
+│   ├── models/                 # Mongoose models: User, Car, Booking
+│   ├── routes/                 # Express routers: userRoutes, ownerRoutes, bookingRoutes
+│   ├── .env.example            # Server environment template
+│   ├── package.json
+│   ├── server.js               # Application entry point
+│   └── vercel.json             # Serverless deployment configuration
+│
+├── README.md                   # Production documentation
+└── .gitignore
+```
+
+---
+
+## 📊 Database Schemas
+
+### `User` Schema
+- `name` (String, required)
+- `email` (String, required, unique)
+- `password` (String, required, hashed with bcrypt)
+- `role` (String, enum: `["user", "owner"]`, default: `"user"`)
+- `image` (String, default avatar)
+
+### `Car` Schema
+- `owner` (ObjectId $\rightarrow$ User)
+- `brand`, `model`, `image`, `description` (String, required)
+- `year`, `pricePerDay`, `seating_capacity` (Number, required)
+- `category` (String: Sedan, SUV, Van)
+- `fuel_type` (String: Gas, Diesel, Petrol, Electric, Hybrid)
+- `transmission` (String: Automatic, Manual, Semi-Automatic)
+- `location` (String, matches centralized `cityList`)
+- `isAvaliable` (Boolean, default: `true`, listing-level availability)
+- `driverAvailable` (Boolean, default: `true`, chauffeur option availability)
+
+### `Booking` Schema
+- `car` (ObjectId $\rightarrow$ Car)
+- `user` (ObjectId $\rightarrow$ User)
+- `owner` (ObjectId $\rightarrow$ User)
+- `pickupDate`, `returnDate` (Date, required)
+- `price` (Number, total rental cost)
+- `status` (String, enum: `["pending", "confirmed", "cancelled"]`, default: `"pending"`)
+- `withDriver` (Boolean, default: `false`)
+- `pickupOption` (String, enum: `["pickup", "delivery"]`, default: `"pickup"`)
+- `deliveryAddress` (String, optional street address)
 
 ---
 
 ## 🔌 API Endpoints Reference
 
-### User & Authentication (`/api/user`)
-- `POST /api/user/register` — Register a new account (returns JWT).
-- `POST /api/user/login` — Authenticate existing user (returns JWT).
-- `GET /api/user/data` — Retrieve profile for authenticated user (`Bearer <token>`).
-- `GET /api/user/cars` — Retrieve all active cars (`isAvaliable: true`).
-
-### Bookings & Availability (`/api/bookings`)
-- `POST /api/bookings/check-availability` — Query available cars for given `pickupDate`, `returnDate`, and optional `location`.
-- `POST /api/bookings/create` — Book a car with date collision check, `withDriver`, and `pickupOption`.
-- `GET /api/bookings/user` — Fetch all bookings made by the authenticated user.
-- `GET /api/bookings/owner` — Fetch all incoming booking requests for the owner's fleet.
-- `POST /api/bookings/change-status` — Owner updates booking status (`confirmed`, `cancelled`, `pending`).
-
-### Owner Management (`/api/owner`)
-- `POST /api/owner/change-role` — Upgrade user account to owner role.
-- `POST /api/owner/add-car` — Upload image & create new car with `driverAvailable` setting.
-- `GET /api/owner/cars` — Fetch all cars listed by current owner.
-- `POST /api/owner/toggle-car` — Toggle listing availability (`isAvaliable`).
-- `POST /api/owner/delete-car` — Remove a car listing.
-- `GET /api/owner/dashboard` — Aggregated stats (revenue, pending/confirmed counts, recent bookings).
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/user/register` | Public | Register new user account |
+| `POST` | `/api/user/login` | Public | Authenticate user & return JWT token |
+| `GET` | `/api/user/data` | Authenticated | Fetch current user session data |
+| `GET` | `/api/user/cars` | Public | List all active available cars |
+| `POST` | `/api/bookings/check-availability` | Public | Check available vehicles for date range & city |
+| `POST` | `/api/bookings/create` | Authenticated | Create booking with driver & fulfillment choice |
+| `GET` | `/api/bookings/user` | Authenticated | Retrieve customer booking history |
+| `GET` | `/api/bookings/owner` | Owner | Retrieve bookings for owner fleet |
+| `POST` | `/api/bookings/change-status` | Owner | Update booking status (`confirmed`, `cancelled`) |
+| `POST` | `/api/owner/change-role` | Authenticated | Upgrade user to owner role |
+| `POST` | `/api/owner/add-car` | Owner | Add vehicle with image upload & driver toggle |
+| `GET` | `/api/owner/cars` | Owner | List cars owned by logged-in user |
+| `POST` | `/api/owner/toggle-car` | Owner | Toggle car listing availability |
+| `POST` | `/api/owner/delete-car` | Owner | Remove car from marketplace |
+| `GET` | `/api/owner/dashboard` | Owner | Fleet metrics and revenue analytics |
 
 ---
 
 ## ⚙️ Installation & Local Setup
 
-### Prerequisites
-- **Node.js** (v18 or higher recommended)
-- **npm** (v9 or higher)
-- **MongoDB** connection string (Local or Atlas)
-- **ImageKit** account credentials
-
-### 1. Repository Setup
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/anshsingh004/Dright.git
 cd Dright
 ```
 
-### 2. Backend Setup
+### 2. Configure Backend
 ```bash
 cd server
 npm install
 ```
 
-Create `.env` in `server/`:
+Copy the environment template and provide your database/API keys:
+```bash
+cp .env.example .env
+```
+Contents of `server/.env`:
 ```env
 PORT=3000
 MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
+JWT_SECRET=your_jwt_secret_key
 IMAGEKIT_PUBLIC_KEY=your_imagekit_public_key
 IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
-IMAGEKIT_URL_ENDPOINT=your_imagekit_endpoint
+IMAGEKIT_URL_ENDPOINT=your_imagekit_url_endpoint
 ```
 
-Start backend:
+Start the server:
 ```bash
 npm start
 # Server runs on http://localhost:3000
 ```
 
-### 3. Frontend Setup
+### 3. Configure Frontend
+Open a separate terminal:
 ```bash
-cd ../client
+cd client
 npm install
 ```
 
-Create `.env` in `client/`:
+Copy the environment template:
+```bash
+cp .env.example .env
+```
+Contents of `client/.env`:
 ```env
 VITE_BASE_URL=http://localhost:3000
 VITE_CURRENCY=$
 ```
 
-Start frontend:
+Start the Vite development server:
 ```bash
 npm run dev
-# Application accessible at http://localhost:5173
+# Application opens at http://localhost:5173
 ```
 
 ---
 
 ## 🧪 Verification & Automated Testing
 
-To run the full suite of automated logic and validation tests:
+Run the automated test suites to verify availability math, driver rules, and location consistency:
 
 ```bash
-# Verify date overlap & availability engine
+# Verify availability & date overlap logic (8 test cases)
 node scratch/test_availability_logic.js
 
-# Verify driver service, pickup options, and location consistency
+# Verify driver availability, fulfillment options, and location consistency
 node scratch/test_phase2_3_4.js
 
 # Verify category recommendations and authentic reviews
 node scratch/test_recommendations_and_reviews.js
 
-# Verify client production compilation
+# Verify production client build
 cd client && npm run build
 ```
+
+---
+
+## 🔮 Future Scope (Intentionally Deferred)
+
+In order to guarantee stability and zero deployment risk for Round 2, the following features are intentionally deferred:
+- **Online Payment Gateways:** (Stripe, Razorpay, UPI) — Currently using offline reservation settlement.
+- **Email / SMS Notification Services:** (Resend, SendGrid, Twilio) — Newsletter and alerts reserved for post-submission.
+- **Live GPS & Telematics:** Real-time driver navigation and route tracking.
 
 ---
 
@@ -227,7 +301,6 @@ A known-good baseline reference tag is permanently preserved:
 ```bash
 git checkout baseline-known-good
 ```
-All feature additions strictly maintain schema backward-compatibility. Old database records safely load defaults without requiring destructive migrations.
 
 ---
 
